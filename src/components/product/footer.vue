@@ -8,7 +8,7 @@
             <!-- <div class="pd_tag-list row-mul">
                 <div v-for="item in pdInfo.categorys" :key="item.id" class="pd_tag-item row row-center">{{item.name}}</div>
             </div> -->
-            <div class="pd_price">￥{{pdInfo.rmbPrice}}</div>
+            <div class="pd_price">￥{{oprice}}</div>
             <p class="choose">请选择规格</p>
             <div class="num-seting row row-start">
                 <div class="num-item num_sub" @click="sub">-</div>
@@ -20,16 +20,17 @@
         </div>
     </div>
     <div class="panel-spec">
-        <div class="spec-name">颜色</div>
-        <div class="spec-color-item row row-center">随机</div>
-        <div class="spec-name spec_size-name">规格</div>
+        <div class="spec-name">{{pdInfo.skuAttributes[0].name}}</div>
         <div class="spec_size-list row row-start">
-            <div v-for="item in pdInfo.skus" :key="item.id" class="spec_size-item row row-center" :class="{'spec_size-active': item.id === skuId}" @click="selectSku(item)">{{item.spec}}</div>
+            <div v-for="item in pdInfo.skuAttributes[0].items" :key="item.id" class="spec_size-item row row-center" :class="{'spec_size-active': item.id === skuId}" @click="selectSku(item)">{{item.name}}</div>
+        </div>
+        <div class="spec-name spec_size-name">{{pdInfo.skuAttributes[1].name}}</div>
+        <div class="spec_size-list row row-start">
+            <div v-for="item in pdInfo.skuAttributes[1].items" :key="item.id" class="spec_size-item row row-center" :class="{'spec_size-active': item.id === twoId}" @click="selectTwo(item)">{{item.name}}</div>
         </div>
     </div>
     <div class="confirm-btn row row-center" @click="confirm">确定</div>
 </div>
-
 
 </template>
 <script>
@@ -42,52 +43,89 @@ export default {
     data () {
         return {
             amount: 1,
-            skuId: ''
+            skuId: '',
+            twoId:'',
+            pushId:'',
+            pdId:'',
+            oprice:0
         }
     },
     methods: {
         confirm () {
-            if (this.amount > 0 && this.skuId) {
-                this.$emit('submit', this.skuId, this.amount)
+            var that=this;
+            this.pdInfo.skus.forEach((item) => {
+                if(item.attributes==that.pushId){
+                     that.pdId=item.id;
+                }
+            });
+            if (this.amount > 0 && that.pdId) {
+                this.$emit('submit', that.pdId, this.amount)
             } else this.$emit('alert', '请选择正确颜色和数量')
         },
         selectSku (item) {
-            if (item.amount < 1) {
-                this.$emit('alert', '该商品库存不足，暂时无法购买')
-            } else this.skuId = item.id
+             this.skuId = item.id
+             if(this.twoId){
+             this.pushId=this.skuId+'-'+this.twoId
+             this.pdInfo.skus.forEach(item=>{
+                 if(item.attributes==this.pushId){
+                     this.oprice=item.price;
+                 }
+             })
+             
+             }
+        },
+        selectTwo (item) {
+             this.twoId = item.id;
+             if(this.skuId){
+             this.pushId=this.skuId+'-'+this.twoId
+             this.pdInfo.skus.forEach(item=>{
+                 if(item.attributes==this.pushId){
+                     this.oprice=item.price;
+                 }
+             })
+             }
         },
         checkAmount () {
-            if (this.skuId) {
-                // const maxAmount = this.findSkuAmount(this.skuId)
-                // if (this.amount > maxAmount) {
-                //     this.$emit('alert', '购买数量不能超过库存')
-                //     this.amount = maxAmount
-                // }
+            if (this.pushId) {
+                const maxAmount = this.findSkuAmount(this.pushId)
+                if (this.amount > maxAmount) {
+                    this.$emit('alert', '购买数量不能超过库存')
+                    this.amount = maxAmount
+                }
             } else {
-                this.$emit('alert', '请先选择尺码')
+                this.$emit('alert', '请先选择尺码，颜色')
                 this.amount = 1
             }
         },
         findSkuAmount (id) {
             return this.pdInfo.skus.find(item => {
-                return item.id === id
+                return item.attributes === id
             }).amount
         },
         add () {
-            if (this.skuId) {
-                this.amount ++
-
-                // if (this.amount < this.findSkuAmount(this.skuId)) {
-                // } else this.$emit('alert', '购买数量不能超过库存')
-            } else this.$emit('alert', '请先选择尺码')
+            if(this.pushId){
+                this.amount ++;
+                if (this.amount < this.findSkuAmount(this.pushId)) {
+                } else {
+                    this.amount = this.findSkuAmount(this.pushId);
+                    this.$emit('alert', '购买数量不能超过库存')
+                    }
+            }else{
+               this.$emit('alert', '请先选择尺码，颜色') 
+            }
         },
         sub () {
-            if (this.skuId) {
+           if(this.pushId){
                 if (this.amount > 1) {
                     this.amount --
                 } else this.$emit('alert', '最少购买一件')
-            } else this.$emit('alert', '请先选择尺码')
+        }else{
+            this.$emit('alert', '请先选择尺码，颜色')
         }
+        }
+    },
+    created(){
+    this.oprice=this.pdInfo.skus[0].price;
     }
 }
 </script>
@@ -102,6 +140,8 @@ export default {
         right: 0;
         z-index: 20;
         background: #FFFFFF;
+        transition:all 2s;
+        z-index: 99999;
     }
     .panel-row-up {
         width: 100%;
@@ -120,6 +160,7 @@ export default {
     .pd_img {
         display: block;
         height: 100%;
+        width: 100%;
     }
     .pd_info {
         position: relative;
@@ -195,7 +236,7 @@ export default {
         color: #A0A0A0;
     }
     .panel-spec {
-        height: 1.3rem;
+        height: 1.4rem;
         padding: 0 .15rem;
         background: #FFFFFF;
     }
@@ -214,9 +255,10 @@ export default {
         font-size: 16px;
         color: #FEFEFE;
         background: #E30059;
+        margin-top: .03rem;
     }
     .spec_size-list {
-
+        margin-top: .03rem;
     }
     .spec_size-item {
         width: .4rem;

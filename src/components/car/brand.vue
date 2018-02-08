@@ -47,7 +47,6 @@ export default {
     }
     .brand-head {
         width: 100%;
-        height: .3rem;
     }
     .select-icon {
         width: .2rem;

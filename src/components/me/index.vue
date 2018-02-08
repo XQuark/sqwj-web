@@ -5,7 +5,6 @@
             <img :src="userInfo.avatar" alt="" class="avatar-img">
         </div>
         <router-link class="user-name" :to="{name: 'myInfo'}">{{userInfo.name}}</router-link>
-        <p class="shop-name">东方红玩具店</p>
     </div>
 
     <router-link class="me-item order-icon row row-start" :to="{name: 'myOrder'}">我的订单</router-link>
@@ -43,6 +42,7 @@ export default {
                 .then((res) => {
                     if (res.data.data) {
                         this.userInfo = res.data.data.user
+                        console.log(res.data.data.user)
                     }
                 })
                 .catch((err) => {
@@ -62,19 +62,21 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
     .me-head {
-        height: 1.53rem;
+        width: 100%;
+        height: 1.15rem;
         border-bottom: solid 1px #E5E5E5;
-        background: url(../../../static/img/me_bg.png) center/100% no-repeat;
+        background: url(../../../static/img/矩形17@2x.png) center/100% no-repeat;
+        background-size:100% 100%; 
         float: left;
         /* display: flex; */
         /* flex-flow: column nowrap; */
     }
     .avatar-box {
-        width: 1.09rem;
-        height: 1.09rem;
-        margin-left: 0.36rem;
-        margin-top: .226rem;
-        border: solid 2px #060606;
+        width: .82rem;
+        height: .82rem;
+        margin-left: 0.27rem;
+        margin-top: .17rem;
+        border:1px solid #000;
         border-radius: 50%;
         overflow: hidden;
         float: left;
@@ -86,22 +88,23 @@ export default {
         border-radius: .3rem;
     }
     .user-name {
-        margin-top: .45rem;
-        margin-left: 0.226rem;
+        margin-top: .44rem;
+        margin-left: 0.17rem;
         font-size: 18px;
          height: 0.24rem;
-        color: #000000;
+        color: #fff;
         width: 2rem;
         overflow: hidden;
         float: left;
     }
     .shop-name{
-        margin-top: .226rem;
-        margin-left: 0.226rem;
-         font-size: 18px;
-        color: #000000;
+        margin-top: .17rem;
+        margin-left: 0.17rem;
+        font-size: 14px;
+        color: #fff;
         width: 2rem;
-        height: 0.24rem;
+        height: 0.14rem;
+        line-height: .14rem;
         overflow: hidden;
         float: left;
     }

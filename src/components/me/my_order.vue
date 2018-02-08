@@ -2,11 +2,11 @@
 <v-page ref="page" :class="{'white-bg': !menus[currentIndex].data.length}">
 <v-scroll-y ref="scroller" @pullingUp="OnpullingUp">
         <div class="menu row row-around">
-            <div v-for="(item,index) in menus" class="menu-item row" :class="{'menu-item-active': currentIndex===index}" @click="checkout(index)">{{item.name}}</div>
+            <div v-for="(item,index) in menus" :key="index" class="menu-item row" :class="{'menu-item-active': currentIndex===index}" @click="checkout(index)">{{item.name}}</div>
         </div>
         <router-link v-for="order in menus[currentIndex].data" :to="{name: 'order', params: {id: order.id}}" :key="order.id" class="order-item">
             <div class="order-head row row-between">
-                <p class="text-warn text-status">待收货</p>
+                <p class="text-warn text-status">{{order.statusStr}}</p>
                 <p class="text-p-low">订单号：{{order.orderNo}}</p>
             </div>
             <v-pd v-for="item in order.pds" :info="item" :key="item.id">
@@ -88,6 +88,7 @@ export default {
         translatedPdInfo (originData) {
             originData.forEach((order) => {
                 order.pds = order.orderItemVOs.map((item) => {
+                    console.log(item)
                     return {
                         id: item.id,
                         $pdUrl: item.productImgUrl,
@@ -96,7 +97,8 @@ export default {
                         $skuSize: item.skuStr,
                         $originPrice: item.marketPrice,
                         $price: item.price,
-                        $amount: item.amount
+                        $amount: item.amount,
+                        $title:item.productName
                     }
                 })
             })
@@ -140,6 +142,7 @@ export default {
     },
     created () {
         this.checkout(0)
+        console.log(this.menus)
     },
     mounted () {
 
@@ -182,6 +185,7 @@ export default {
         height: .35rem;
         padding: 0 .1rem;
         border-bottom: solid 1px #F0F0F0;
+        border-top:2px solid #f
     }
     .order-footer {
         height: .45rem;
@@ -232,7 +236,7 @@ export default {
         margin-right: .1rem;
         border: solid 1px #000000;
     }
-    .text-status{
+    .text-status, .text-warn{
         color:#E30059;
     }
 </style>

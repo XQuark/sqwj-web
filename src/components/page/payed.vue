@@ -1,8 +1,8 @@
 <template>
 <v-page>
     <div class="head-bg">
-        <p class="head_title row row-center">已付款成功</p>
-        <p class="head_p row row-center">您的包裹已整装待发</p>
+        <p class="head_title  row-center">已付款成功</p>
+        <p class="head_p  row-center">您的包裹已整装待发</p>
     </div>
 
     <div class="address col col-center">
@@ -92,15 +92,18 @@ export default {
     .head-bg {
         width: 100%;
         height: 1rem;
-        background: url(../../../static/img/payed_bg.png) left top/contain no-repeat;
+        background: url(../../../static/img/矩形17@2x.png) left top/contain no-repeat;
+        background-size: 100% 100%;
     }
     .head_title {
         margin-top: .3rem;
+        margin-left: 1.51rem;
         font-size: 16px;
         color: #FFFFFF;
     }
     .head_p {
-        margin-top: .06rem;
+        margin-top: .09rem;
+        margin-left: 1.51rem;
         font-size: 14px;
         color: #FFFFFF;
     }

@@ -5,12 +5,12 @@
         </div>
         <div class="pd-content col col-start">
             <div class="tag-list row row-mul">
-                <div v-for="item in info.$categorys" :key="item.id" class="tag-item">{{item.name}}</div>
+                <div class="tag-item">{{info.$title}}</div>
             </div>
             <p class="pd_text">
                 <span class="pd_spec">
-                    <span class="pd_info-key">规格：</span>
-                    <span class="pd_info-value">{{info.$pdColor}}</span>
+                    <span class="pd_info-key">型号：</span>
+                    <span class="pd_info-value">{{info.$skuSize}}</span>
                 </span>
                 <!-- <span class="pd_size">
                     <span class="pd_info-key">尺寸：</span>
@@ -52,7 +52,7 @@ export default {
         // 'v-amount': amount
     },
     created () {
-
+        console.log(this.info)
     }
 }
 </script>
@@ -85,13 +85,13 @@ export default {
     }
     .tag-list {
         align-self: stretch;
+        overflow: hidden;
+        height: .4rem;
     }
     .tag-item {
-        /*width: .45rem;*/
-        height: .2rem;
-        margin: 0 .1rem .1rem 0;
-        padding: 0 .05rem;
-        border: solid 1px #a0a0a0;
+        /* width: .45rem; */
+        height: .4rem;
+        line-height: .2rem;
         font-size: 15px;
         color: #333333;
     }
@@ -112,7 +112,7 @@ export default {
         margin-left: .2rem;
     }
     .pd_info-key {
-        color: #616161;
+        color: #333;
     }
     .pd_info-value {
         color: #242424;

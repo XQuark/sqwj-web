@@ -1,5 +1,5 @@
 <template>
-<div class="scroll_y" @scroll="scrollListener($event)">
+<div class="scroll_y stopscroll" @scroll="scrollListener($event)">
     <div class="wraper">
         <slot></slot>
     </div>
@@ -10,9 +10,9 @@
 export default {
     name: 'thrSection',
     // props: [''],
-    data () {
+    data () { 
         return {
-            listenerOn: true
+            listenerOn: true,
         }
     },
     methods: {
@@ -28,6 +28,12 @@ export default {
                     this.$emit('pullingUp')
                 }
             }
+        },
+        closescroll(){
+            this.onscroll=true
+        },
+        openscroll(){
+            this.onscroll=false
         }
     },
     created () {
@@ -41,8 +47,11 @@ export default {
         width: 100%;
         height: 100%;
         overflow-y: scroll;
+        background: #fff;
     }
     .wraper {
         width: 100%;
+        height: 100%;
     }
+    
 </style>

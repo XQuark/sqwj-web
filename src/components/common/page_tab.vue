@@ -36,5 +36,6 @@ export default {
         width: 100%;
         height: calc(100% - .5rem);
         overflow-y: hidden;
+        background: #fff;
     }
 </style>

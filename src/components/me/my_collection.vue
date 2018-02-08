@@ -2,7 +2,7 @@
 <v-page :class="{'white-bg': !colList.length}">
     <v-scroll-y ref="scroller" @pullingUp="OnpullingUp">
         <template v-if="colList.length">
-            <v-item v-for="item in colList" :key="item.id" :info="item"></v-item>
+            <v-item v-for="item in colList" :key="item.id" :info="item" ></v-item>
         </template>
         <v-empty v-else>
             <p slot="title">还没有收藏任何商品</p>
@@ -41,7 +41,9 @@ export default {
             return this.updatePager((page, size) => {
                 return this.getCollections(page, size)
                     .then((res) => {
+                        console.log(res)
                         if (res.data.data) {
+                            console.log(res.data.data.list)
                             return res.data.data.list
                         } else throw new Error('请求结果数据错误')
                     })

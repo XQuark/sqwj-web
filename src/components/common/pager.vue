@@ -16,6 +16,7 @@ export default {
             if (this.pager.isMore) {
                 return fn(this.pager.page, this.pager.size)
                     .then((data) => {
+                        console.log(data)
                         this.pager.isMore = !(data.length < this.pager.size)
                         this.pager.list = this.pager.list.concat(data)
                         this.pager.page ++

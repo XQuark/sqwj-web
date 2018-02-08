@@ -1,10 +1,10 @@
 <template>
 <div class="num-seting row row-start">
-    <div class="num-item num_sub" @click="sub"></div>
+    <div class="num-item num_sub" @click="sub">—</div>
     <div class="num_input-box row row-center">
         <input type="text" v-model="amount" @blur="setAmount(amount)" class="num_input">
     </div>
-    <div class="num-item num_add" @click="add"></div>
+    <div class="num-item num_add" @click="add">+</div>
 </div>
 </template>
 
@@ -64,19 +64,27 @@ export default {
     .num-item {
         width: .25rem;
         height: .25rem;
-        border: solid 1px #000000;
+        border: solid 1px #A0a0a0;
     }
     .num_sub {
-        background: url(../../assets/sub.png) center/.15rem no-repeat;
+        /* background: url(../../assets/sub.png) center/.15rem no-repeat; */
+        text-align: center;
+        color: #A0a0a0;
+        line-height: 0.25rem;
+        font-size: 10px;
     }
     .num_add {
-        background: url(../../assets/add.png) center/.15rem no-repeat;
+        /* background: url(../../assets/add.png) center/.15rem no-repeat; */
+        text-align: center;
+        color: #A0a0a0;
+        line-height: 0.25rem;
+        font-size: 18px;
     }
     .num_input-box {
         width: .5rem;
         height: .25rem;
-        border-top: solid 1px #000000;
-        border-bottom: solid 1px #000000;
+        border-top: solid 1px #a0a0a0;
+        border-bottom: solid 1px #a0a0a0;
         
     }
     .num_input {
@@ -86,6 +94,6 @@ export default {
         border: 0;
         text-align: center;
         font-size: 16px;
-        color: #000000;
+        color: #a0a0a0;
     }
 </style>

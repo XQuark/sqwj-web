@@ -4,14 +4,14 @@ var path = require('path')
 let caoHost = "http://192.168.31.172"
 let wangHost = "http://192.168.31.166"
 let maoHost = 'http://192.168.31.202'
-// const realHost = "http://121.42.184.125"
-const realHost = "http://106.14.57.217"
+const realHost = "http://121.42.184.125"
+// const realHost = "http://192.168.31.172"
 
 // caoHost = realHost
 // wangHost = realHost
 const setHeader = (proxyReq, req, res) => {
-    proxyReq.setHeader('host', 'uplus.51shop.mobi');
-    proxyReq.setHeader('Origin', 'http://uplus.51shop.mobi');
+    proxyReq.setHeader('host', 'sqwj.51shop.mobi');
+    proxyReq.setHeader('Origin', 'http://sqwj.51shop.mobi');
     proxyReq.setHeader('User-Agent', 'Mozilla/5.0 (iPhone; CPU iPhone OS 9_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13B143 Safari/601.1');
 }
 const table = {}

@@ -55,6 +55,7 @@ export default {
     created () {
         this.getAddrList()
             .then((res) => {
+                 console.log(res)
                 if (res.data.data) {
                     this.addrList = res.data.data
                 } else throw new Error('网络请求数据错误')

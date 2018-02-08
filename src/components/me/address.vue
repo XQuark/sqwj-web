@@ -35,7 +35,7 @@
         <div class="info-item row row-start">
             <div class="info-label">店名：</div>
             <div class="info-content row row-start">
-                <input type="text" class="addr-input-item" value="东方文具店">
+                <input type="text" class="addr-input-item" v-model="user.storeName">
             </div>
         </div>
         <div class="default-setting row row-between">
@@ -90,9 +90,11 @@ export default {
                 zoneId: '',
                 phone: '',
                 street: '',
-                isDefault: false
+                isDefault: false,
+                storeName:''
             },
-            isAlert: false
+            isAlert: false,
+            tradeName:'东方文具店'
         }
     },
     methods: {
@@ -152,7 +154,9 @@ export default {
                             zoneId: addr.zoneId,
                             phone: addr.phone,
                             street: addr.street,
-                            isDefault: addr.isDefault
+                            isDefault: addr.isDefault,
+                            storeName:addr.storeName
+
                         }
                         this.setAddrSelect(1, 'provinceList')
                         this.province = addr.zones[1].id

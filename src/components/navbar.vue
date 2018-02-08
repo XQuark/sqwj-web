@@ -61,6 +61,7 @@ export default {
         height: .5rem;
         box-shadow: 0 1px 7px RGBA(98,98,98,.25);
         background: #F7F7FA;
+        z-index: 99999;
     }
     .nav-item {
         width: .6rem;
@@ -73,7 +74,7 @@ export default {
         color: #888888;
     }
     .nav-index-active {
-        background: center .05rem/.25rem no-repeat url('../assets/index_active.png');
+        background: center .05rem/.25rem no-repeat url('../assets/首页@2x.png');
         color: #000000;
     }
     .nav-car {
@@ -96,14 +97,14 @@ export default {
         color: #000000;
     }
     .nav-car-active .car-icon {
-        background: center/contain no-repeat url('../assets/cart_active.png');
+        background: center/contain no-repeat url('../assets/购物车(2)@2x.png');
     }
-    .nav-me {
+    .nav-me{
         background: center .05rem/.25rem no-repeat url('../assets/me.png');
         color: #888888;
     }
     .nav-me-active {
-        background: center .05rem/.25rem no-repeat url('../assets/me_active.png');
+        background: center .05rem/.25rem no-repeat url('../assets/wode@2x.png');
         color: #000000;
     }
 </style>

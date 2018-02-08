@@ -3,7 +3,7 @@
         <div class="input-list row row-start">
             <label for="" class="input-list-label text-p">手机号</label>
             <input type="text" class="input-list-input text-p" v-model="oldPhone">
-            <div class="code-btn row row-center" @click="getCode">获取验证码</div>
+            <div class="code-btn row row-center" :class="{'not-btn':!getcode}" @click="getCode">{{codevalue}}</div>
         </div>
 
         <div class="input-list row row-start">
@@ -24,22 +24,43 @@ export default {
     data () {
         return {
             phone: '',
-            code: ''
+            oldPhone:'',
+            code: '',
+            getcode:true,
+            codevalue:"获取验证码"
         }
     },
     methods: {
-        // getCode () {
-        //     const url = '/v2/register/bindPhone?mobile=' + this.oldPhone
-        //     axios.post(url)
-        //         .then((res) => {
-        //             console.log(res)
-        //         })
-        //         .catch((err) => {
-        //             console.log(err)
-        //         })
-        // },
+        getCode () {
+            var that=this;
+            if(this.checkPhone()){
+                if(this.getcode==false){
+                return console.log(123)
+                }
+            const url = '/v2/register/bindPhone?mobile=' + this.oldPhone
+            axios.post(url)
+                .then((res) => {    
+                    console.log(res)
+                   this.getcode=false;
+                })
+                .catch((err) => {
+                    console.log(err)
+                    return
+                })
+                var inx=59;
+                var time=setInterval(function(){
+                    inx--;
+                    that.codevalue=inx+"s后再获取";
+                    if(inx===0){
+                    that.getcode=true;
+                    that.codevalue="获取验证码"
+                    clearInterval(time)
+                     }
+                   },1000)
+            }     
+        },
         checkPhone () {
-            if (/^\d{11}$/.test(this.phone)) {
+            if (/^\d{11}$/.test(this.oldPhone)) {
                 return true
             } else {
                 alert('手机号格式不对')
@@ -47,6 +68,9 @@ export default {
             }
         },
         submit () {
+            if(this.phone==''){
+                return alert('验证码错误')
+            }
             if (this.checkPhone()) {
                 const url = '/v2/user/updatePhoneNew?mobile=' + this.phone
                 axios.post(url)
@@ -99,5 +123,8 @@ export default {
         background: #e30059;
         font-size: 14px;
         color: #FFFFFF;
+    }
+    .not-btn{
+        background: #888;
     }
 </style>

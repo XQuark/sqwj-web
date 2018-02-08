@@ -1,34 +1,54 @@
 <template>
 <v-page class="white-bg" ref="page">
-        <v-carousel :imgs="imgs" class="carousel"></v-carousel>
-
-        <div class="pd_row-up row row-start">
-            <div class="line-vertical"></div>
-            <p class="pd_price">
-                <span class="pd_rmb">￥</span>{{pdInfo.rmbPrice}}
-                <del class="pd_price-origin">￥{{pdInfo.rmbMarketPrice}}</del>
-            </p>
+        <!-- <v-carousel :imgs="imgs" class="carousel"></v-carousel> -->
+        <v-scroll-y ref="scroller" @pullingUp="OnpullingUp">
+            <v-carousel :imgs="pdInfo.imgs" class="shop-image"></v-carousel>
+        <!-- <div class="shop-image"><img :src="pdInfo.imgUrl"/></div> -->
+        <div class="spec-box">
+        <div class="pd_row-up row-start">
+            <div class="line-vertical">{{pdInfo.name}}</div>
+            <div class="pd-collect-box">
             <div class="pd_collect" :class="{'pd_collect-active': pdInfo.collection}" @click="toggleCollect"></div>
+            <p v-if="!pdInfo.collection">收藏</p>
+            <p v-if="pdInfo.collection">已收藏</p>
+            </div>
+            <p class="pd_price">
+                <!-- <span class="pd_rmb">￥</span>{{pdInfo.rmbPrice}} -->
+                ￥{{pdInfo.price}}
+            </p>
+            <p class="shop-last">库存：{{pdInfo.amount}}</p>
+            <p class="shop-ok">销量：{{pdInfo.sales}}</p>
         </div>
-        <div class="pd_row-tag row-mul">
+        <!-- <div class="pd_row-tag row-mul">
             <div v-for="item in pdInfo.categorys" :key="item.id" class="tag-item row row-center">{{item.name}}</div>
+        </div> -->
+        <div class="insurance">
+            <p class="insurance-p1">服务保障：</p>
+            <p class="insurance-p2"><img src="../../assets/玩具拷贝2@2x.png"/>安全无毒</p>
+            <p class="insurance-p3"><img src="../../assets/玩具拷贝2@2x.png"/>全网爆款</p>
+            <p class="insurance-p4"><img src="../../assets/玩具拷贝2@2x.png"/>匠心制作</p>
         </div>
-        <div class="add_cart-btn row row-center" @click="openFooter">加入购物车</div>
-
-        <v-footer v-if="isShowFooter" :pdInfo="pdInfo" @submit="submit" @alert="$refs.page.alert"></v-footer>
-
-        <div v-if="isShowFooter" class="mask-mode" @click="closeFooter"></div>
+       <div class="spec" @click="openFooter"><a>规格</a><img src="../../assets/arrow_right.png"/></div>
+       <div class="shop-detail">商品详情</div>
+       <div class="recommend" v-for="item in pdInfo.fragments[0].imgs"><img :src="item.imgUrl"/>
+       </div>
+       </div>
+       <div class="add_cart-btn row row-center" @click="openFooter">加入购物车</div>
+       <transition>
+        <div class="pdbox" v-if="isShowFooter" @touchmove.prevent>
+            <div v-if="isShowFooter" class="mask-mode" @click="closeFooter"></div>
+            <v-footer :pdInfo="pdInfo" @submit="submit" @alert="$refs.page.alert"></v-footer>
+        </div>
+       </transition>
+        </v-scroll-y>
 </v-page>
-
 
 </template>
 <script>
-import carousel from './swiper.vue'
 import axios from 'axios'
 import querystring from 'querystring'
 import footer from './footer.vue'
-/* eslint-disable no-new */
-
+import carousel from './swiper1.vue'
 export default {
     name: 'pd',
     data () {
@@ -50,6 +70,7 @@ export default {
         // },
         addCart (data) {
             const url = '/v2/cart/add?' + querystring.stringify(data)
+            console.log(data)
             return axios.post(url)
         },
         submit (skuId, amount) {
@@ -62,7 +83,9 @@ export default {
                 .then((res) => {
                     if (res.data.data === true) {
                         this.$router.push({path: '/car'})
-                    } else this.$refs.page.alert(res.data.moreInfo)
+                    } else {
+                        console.log(res)
+                        this.$refs.page.alert(res.data.moreInfo)}
                 })
                 .catch(() => {
                     this.$refs.page.alert('加入购物车失败')
@@ -78,7 +101,10 @@ export default {
         },
         checkIsCollected (id) {
             const url = '/v2/productCollection/check?productId=' + id
-            return axios.post(url)
+            return axios.post(url).then((res)=>{
+                
+                return res
+            })
         },
         toggleCollect () {
             const togglePromise = this.pdInfo.collection ? this.cancelCollect(this.pdId) : this.collectPd(this.pdId)
@@ -88,6 +114,7 @@ export default {
                 } else return this.checkIsCollected(this.pdId)
             })
             .then((res) => {
+                console.log(res)
                 if (res.data.data === true) {
                     this.pdInfo.collection = true
                 } else if (res.data.data === false) {
@@ -97,6 +124,7 @@ export default {
             .catch((err) => {
                 console.log(err)
             })
+            console.log(this.pdInfo.collection)
         },
         openFooter () {
             this.isShowFooter = true
@@ -107,8 +135,10 @@ export default {
         init () {
             this.getPdInfo()
                 .then((res) => {
+                    //  debugger;
                     if (res.data.data) {
                         this.pdInfo = res.data.data
+                         console.log(this.pdInfo.collection)
                     } else throw new Error('网络请求结果错误')
                 })
                 .catch((err) => {
@@ -126,7 +156,7 @@ export default {
     computed: {
         imgs () {
             if (this.pdInfo.imgs) {
-                return this.pdInfo.imgs.slice(1)
+                return this.pdInfo.imgs[0]
             } else return []
         }
     },
@@ -139,6 +169,7 @@ export default {
             this.pdId = this.$route.params.id
             this.init()
         } else this.$router.go(-1)
+        // this.cancelCollect(this.pdId)
     }
 }
 </script>
@@ -161,20 +192,27 @@ export default {
         margin-top: .08rem;
     }
     .pd_row-up {
+        background: #fff;
         width: 100%;
-        margin-top: .12rem;
+        padding-top: .12rem;
+        float: left;
     }
     .line-vertical {
-        width: .02rem;
-        height: .2rem;
-        margin-left: .08rem;
-        background: #E30059;
+        width: 2.97rem;
+        height: .42rem;
+        margin-left: .1rem;
+        font-size: 16px;
+        color: #333333;
+        overflow: hidden;
+        float: left;
     }
     .pd_price {
-        flex:  1 1;
-        margin-left: .1rem;
+        width: 100%;
+        height: .2rem;
         color: #E30059;
-        font-size: 21px;
+        font-size: 19px;
+        font-family: PingFang-SC-Medium;
+        float: left;
     }
     .pd_rmb {
         font-size: 14px;
@@ -183,14 +221,31 @@ export default {
         font-size: 10px;
         color: #666666;
     }
+    .pd-collect-box{
+     margin-right: .11rem;
+     margin-top: .03rem;
+     float: right;
+     width: .5rem;
+     height: .4rem;
+     font-size: 14px;
+    }
     .pd_collect {
-        width: .18rem;
-        height: .2rem;
-        margin-right: .17rem;
-        background: url(../../assets/collect.png) center/contain no-repeat;
+        width: .32rem;
+        height: .22rem;
+        float: right;
+        margin-right: .1rem;
+        background: url(../../assets/收藏（已选）拷贝.png) center/contain no-repeat;
     }
     .pd_collect-active {
-        background: url(../../assets/collect_active.png) center/contain no-repeat;
+        background: url(../../assets/收藏（已选）拷贝@2x.png) center/contain no-repeat;
+    }
+    .pd-collect-box p{
+        margin-left: .06rem;
+        width: 100%;
+        float: left;
+        font-size: 12px;
+        margin-top: .12rem;
+        color: #888888;
     }
     .pd_row-tag {
         box-sizing: border-box;
@@ -208,21 +263,145 @@ export default {
     }
     .add_cart-btn {
         flex: 0 0 .34rem;
-        align-self: flex-end;
-        width: 1.24rem;
+        width: 1.96rem;
+        height: .33rem;
         margin-bottom: .15rem;
         margin-right: .15rem;
+        margin-left: .9rem;
         border-radius: .17rem;
         background: #E30059;
         font-size: 18px;
         color: #FFFFFF;
+        position: fixed;
+        bottom: 0;
+        opacity: 0.75;
+        z-index: 90;
     }
     .mask-mode {
+       width: 100%;
+       height:100% ;
+    }
+    .shop-image{
+        width: 100%;
+        height: 3.75rem;
+        background: #abcdef;
+        float: left;
+        overflow: hidden;
+    }
+    .shop-image img{
+       width: 100%;
+       height: 100%;
+    }
+     .shop-last, .shop-ok{
+        color: #888888;
+        font-size: 12px;
+        width: 40%;
+        float: left;
+        margin-top: .08rem;
+        margin-bottom: .11rem;
+    }
+    .shop-last{
+        text-align:end;
+        float: right;
+        margin-right: .15rem;
+    }
+    .shop-ok{
+        margin-left: .11rem;
+    }
+    .insurance{
+      background: #fff;
+      width: 100%;
+      height: .34rem;
+      font-size: 12px;
+      margin-top: 0.03rem;
+      float: left;
+    }
+    .insurance p{
+     float: left;
+     color: #333333;
+    line-height: .34rem;
+    }
+    .insurance p img{
+     width: 15px;
+    height: 15px;
+    margin-top: .1rem;
+    float: left;
+    margin-right: .05rem;
+    }
+    .insurance-p1{
+   margin-left: .1rem;
+    }
+     .insurance-p2{
+    width: 20%;
+    height: 100%;
+    margin-left: .03rem;
+    }
+    .insurance-p3{
+    width: 20%;
+    height: 100%;
+    margin-left: .33rem;
+    }
+    .insurance-p4{
+    width: 20%;
+    height: 100%;
+    margin-left: .33rem;
+    }
+    .spec, .shop-detail{
+        background: #fff;
+        width: 100%;
+        height: .44rem;
+        line-height: .44rem;
+        font-size: 14px;
+        margin-top: .08rem;
+        float: left;
+    }
+    .spec a{
+        display: block;
+        width: 50%;
+        height: .44rem;
+        line-height: .44rem;
+        font-size: 14px;
+        margin-left: .1rem;
+        color: #636363;
+        float: left;
+    }
+    .spec img{
+     width: .08rem;
+     height:.14rem;
+     float: right;
+     margin-top:.15rem ;
+     margin-right: .15rem;
+    }
+    .shop-detail{
+        text-align: center;
+        color: #636363;
+    }
+    .recommend{
+        width: 100%;
+        background: #fff;
+        float: left;
+        position: relative;
+        overflow: hidden;
+    }
+    .recommend img{
+       width: 100%;
+       height: 100%;
+    }
+    .spec-box{
+        width: 100%;
+        height: 5.27rem;
+        float: left;
         position: absolute;
-        left: 0;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        z-index: 19;
+        top:3.75rem;
+    }
+    .pdbox{
+        width: 100%;
+        height: 100%;
+        background:rgba(0, 0, 0, 0.4);
+        position: absolute;
+        z-index: 99;
+       transition-duration: 0.1s;
+       transition-timing-function:ease-out;
+       transition-property:height;
     }
 </style>

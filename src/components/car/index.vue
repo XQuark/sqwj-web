@@ -9,9 +9,7 @@
     <div class="cart-content">
         <v-brand v-for="item in brandList" :key="item.id" :brandInfo="item">
             <div slot="select" class="select-icon" :class="{'selected-icon': item.chosed}" @click="checkoutBrand(item.id)"></div>
-
             <div slot="pds" v-for="pd in item.pds" :key="pd.id" class="brand-order row row-start" >
-
                 <div class="select-icon" :class="{'selected-icon': pd.chosed}" @click="checkoutItems([pd.id])"></div>
                 <v-pd :info="pdsInfo[pd.id]">
                     <p v-if="!isEdit" class="pd_amount">{{pd.amount}}</p>
@@ -45,7 +43,7 @@
             
         </template>
         <template v-else>
-            <div class="row-item total_fee-text col col-center">
+            <div class="row-item total_fee-text">
                 <p class="text-gray">总价：<span class="text-warn">¥{{totalFee}}</span></p>
                 <p class="text-gray-light-low">不含运费</p>
             </div>
@@ -228,6 +226,7 @@ export default {
         init () {
             this.getCarInfo()
                 .then((res) => {
+                    console.log(res.data.data)
                     if (res.data.data && res.data.data.cartItemMap) {
                         const cartItem = res.data.data.cartItemMap
                         let carts = []
@@ -240,9 +239,6 @@ export default {
                         carts.forEach((item) => {
                             const pd = {
                                 id: item.id,
-                                brandId: item.brand.id,
-                                brandAvatar: item.brand.imgUrl,
-                                brandName: item.brand.name,
                                 amount: item.amount,
                                 skuId: item.sku.id,
                                 chosed: false
@@ -256,7 +252,8 @@ export default {
                                 $pdColor: item.product.color ? item.product.color.name : '',
                                 $skuSize: item.sku.spec,
                                 $originPrice: item.sku.rmbMarketPrice,
-                                $price: item.sku.rmbPrice,
+                                $price: item.sku.price,
+                                $title:item.product.description,
                                 $disabled: !(item.product.status === 'ONSALE')
                             })
                         })
@@ -385,8 +382,7 @@ export default {
 
     }
     .total_fee-text {
-        align-items: flex-end;
-        text-align: right;
+        display: flex;
     }
     .total_select-text {
         margin-left: .14rem;
@@ -400,19 +396,26 @@ export default {
         margin-left: .15rem;
         font-size: 17px;
         color: #FEFFFF;
-        background:  #2C2C2C;
+        background:  #e30059;
     }
     .text-warn {
         font-size: 15px;
-        color: #FF5350
+        color: #e30059
     }
     .text-gray {
         font-size: 15px;
         color: #666666;
+        height: 100%;
+        margin-left: 0.26rem;
+        float: left;
     }
     .text-gray-light-low {
         font-size: 11px;
         color: #999999;
+        margin-left: .12rem;
+        margin-top: 2px;
+        height: 100%;
+        float: left;
     }
     .invalid-tag {
         width: .3rem;

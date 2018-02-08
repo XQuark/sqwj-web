@@ -30,7 +30,7 @@ export default {
     .empty-cart {
         width: 100%;
         height: 2.5rem;
-        background: #FFFFFF url(../../assets/empty.png) center center/.64rem .61rem no-repeat;
+        background: #fafafa url(../../assets/empty.png) center center/.64rem .61rem no-repeat;
     }
     .empty-title {
         margin-top: 1.7rem;

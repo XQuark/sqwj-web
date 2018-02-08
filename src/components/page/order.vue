@@ -7,14 +7,13 @@
                 <span>{{addrInfo.phone}}</span>
             </p>
             <p class="addr-info text-info">收货地址：{{addrInfo.details}}</p>
-            <p class="shop-name text-info">店名：东方文具店</p>
         </div>
 
         <div class="colour-line"></div>
 
-        <v-brand v-for="(item,index) in brandList" :key="item.brand.id" :brandInfo="item.brand">
-            <p v-if="index === 0" slot="orderStatus" class="text-warn order-status">待收货</p>
-            <v-pd v-for="pd in item.pds" :key="pd.id" :info="pd" class="order_pd" slot="pds">
+        <v-brand v-for="(item,index) in brandList" :key="index" :brandInfo="item.brand">
+            <p v-if="index === 0" slot="orderStatus" class="text-warn order-status">{{status}}</p>
+            <v-pd v-for="(pd,inx) in item.pds" :key="inx" :info="pd" class="order_pd" slot="pds">
                 <p class="pd_amount" slot="">{{pd.$amount}}</p>
             </v-pd>
         </v-brand>
@@ -25,7 +24,7 @@
         </div>
         <div class="settle_list-item row row-start">
             <p class="list-name text-p">优惠</p>
-            <div class="list-value detail-icon row row-start">¥10.00</div>
+            <div class="list-value detail-icon row row-start">¥{{productfee}}</div>
         </div>
 
         <div class="settle_list-item row row-start">
@@ -35,11 +34,11 @@
 
         <div class="settle_list-item row-start">
             <p class="list-name text-p">卖家备注</p>
-            <div class="list-value row row-start">周末休息，快递不要派送</div>
+            <div class="list-values row row-start">周末休息，快递不要派送</div>
         </div>
 
         <div class="order-card">
-            <p class="ctrlc">复制</p>
+            <button :data-clipboard-text = "contain1" type="text" class="ctrlc1">复制</button>
             <p class="text-order-card">订单编号：{{info.orderNo}}</p>
             <p class="text-order-card">下单时间：{{info.createdAtStr}}</p>
             <p class="text-order-card">付款时间：{{info.status !== 'SUBMITTED' ? info.paidAtStr : '未付款'}}</p>
@@ -47,7 +46,7 @@
         </div>
 
         <div class="order-card">
-            <p class="ctrlc">复制</p>
+            <button :data-clipboard-text = "contain2" type="text" class="ctrlc">复制</button>
             <p class="text-order-b">物流公司：{{info.logisticsCompany}}</p>
             <p class="text-order-b">物流单号：{{info.logisticsOrderNo}}</p>
         </div>
@@ -69,6 +68,9 @@ import pd from '../common/pd_item.vue'
 import brand from '../car/brand.vue'
 import content from '../common/content.vue'
 import wx from '../common/wx.js'
+import Clipboard from 'clipboard'
+let clipboard = new Clipboard('.ctrlc');
+let clipboard1 = new Clipboard('.ctrlc1');
 // import bus from '../common/bus.js'
 /* eslint-disable no-new */
 
@@ -78,7 +80,12 @@ export default {
         return {
             info: {},
             wx: {},
-            isPaing: false
+            isPaing: false,
+            addrInfo:[],
+            status:'',
+            productfee:0,
+            contain1:'',
+            contain2:''
         }
     },
     methods: {
@@ -149,8 +156,15 @@ export default {
         init () {
             this.getOrderInfo(this.orderId)
                 .then((res) => {
+                    console.log(res)
                     if (res.data.data) {
                         this.info = res.data.data
+                        this.status=res.data.data.statusStr;
+                        this.productfee=res.data.data.discountFee;
+                        this.addrInfo=this.info.orderAddress;
+                        this.contain1='订单编号：'+this.info.orderNo+',下单时间：'+this.info.createdAtStr+',付款时间：'+(this.info.status !== 'SUBMITTED' ? this.info.paidAtStr : '未付款')+',付款方式：'+(this.info.status !== 'SUBMITTED' ? '微信支付' : '未付款')
+                        this.contain2='物流公司：'+this.info.logisticsCompany+',物流单号：'+this.info.logisticsOrderNo
+                        console.log(this.addrInfo)
                     } else throw new Error('请求数据错误')
                 })
                 .catch((err) => {
@@ -163,14 +177,16 @@ export default {
             if (this.info.orderItemVOs) {
                 const brand = {}
                 this.info.orderItemVOs.forEach((item) => {
-                    if (brand[item.brand.id]) {
-                        brand[item.brand.id].push(item)
-                    } else brand[item.brand.id] = [item]
+                    console.log(item)
+                    if (brand[item.id]) {
+                        brand[item.id].push(item)
+                    } else brand[item.id] = [item]
                 })
                 return Object.keys(brand).map((key) => {
                     return {
                         brand: brand[key][0].brand,
                         pds: brand[key].map((item) => {
+                            console.log(item)
                             return {
                                 id: item.id,
                                 $pdUrl: item.productImgUrl,
@@ -179,20 +195,18 @@ export default {
                                 $skuSize: item.skuStr,
                                 $originPrice: item.marketPrice,
                                 $price: item.price,
-                                $amount: item.amount
+                                $amount: item.amount,
+                                $title:item.productName
                             }
                         })
                     }
                 })
             } else return []
         },
-        addrInfo () {
-            return this.info.orderAddress || {}
-        },
         fee () {
             const fee = {
                 payAmount: 0,
-                logistics: 0
+                logistics: 0,
             }
             if (this.info.orderFees) {
                 const payAmount = this.info.orderFees.find((item) => {
@@ -201,8 +215,12 @@ export default {
                 const logistics = this.info.orderFees.find((item) => {
                     return item.code === 'logistics'
                 })
+                // const discount = this.info.orderFees.find((item) => {
+                //     return item.code === 'discount'
+                // })
                 fee.payAmount = payAmount.amount
                 fee.logistics = logistics.amount
+            //     fee.discount = discount.amount
             }
             return fee
         }
@@ -228,7 +246,6 @@ export default {
         background: #ffffff;
     }
     .address {
-        flex: 0 0 1.4rem;
         padding: .1rem .1rem ;
         background: #FFFFFF;
     }   
@@ -241,19 +258,20 @@ export default {
         overflow: hidden;
     }
     .addr-info {
-        height: .4rem;
+        max-height: .4rem;
+        line-height:.2rem; 
         margin-top: .03rem;
         overflow: hidden;
     }
     .colour-line {
         width: 100%;
         height: .05rem;
-        background: url(../../assets/line_colour.png) center/100% no-repeat;
+        background: url(../../assets/矩形1293@2x.png) center/100% no-repeat;
     }
     .order_pd {
         padding: .1rem .15rem;
         border-top: solid 1px #000000;
-        border-bottom: solid 1px #000000;
+        border-bottom: solid 1px #e5e5e5;
     }
     .settle_list-item {
         height: .45rem;
@@ -268,6 +286,13 @@ export default {
         line-height:0.45rem;
     }
     .list-value {
+        height: 100%;
+        margin-right: .15rem;
+        font-size: 14px;
+        color: #666666;
+        float: left;overflow: hidden;
+    }
+    .list-values {
         height: 100%;
         margin-left: .21rem;
         font-size: 14px;
@@ -313,7 +338,7 @@ export default {
         background: #FFFFFF;
         position: relative;
     }
-    .ctrlc{
+    .ctrlc, .ctrlc1{
         text-align: center;
         position: absolute;
         line-height: 0.18rem;

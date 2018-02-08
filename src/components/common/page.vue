@@ -61,6 +61,7 @@ export default {
         z-index: 200;
     }
     .white-bg {
-        background: #FFFFFF;
+        background: #f4f4f4;
+        width: 100%;
     }
 </style>

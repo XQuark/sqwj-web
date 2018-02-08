@@ -9,13 +9,13 @@
                     <span>{{addrInfo.phone}}</span>
                 </p>
                 <p class="addr-info text-info">收货地址：{{addrInfo.details}}</p>
-                <p class="shop-name text-info">店名：东方文具店</p>
+                <p class="shop-name text-info">店名：{{addrInfo.storeName}}</p>
             </template>
         </router-link>
 
         <div class="colour-line"></div>
 
-        <v-brand v-for="item in brandList" :key="item.brand.id" :brandInfo="item.brand">
+        <v-brand v-for="item in brandList"  :brandInfo="item.brand">
             <v-pd v-for="pd in item.pds" :key="pd.id" :info="pd" class="order_pd" slot="pds">
                 <p class="pd_amount">{{pd.$amount}}</p>
             </v-pd>
@@ -23,17 +23,17 @@
         
         <div class="settle_list-item row row-start">
             <p class="list-name text-p">运费</p>
-            <div class="list-value row row-start">¥{{fee.logisticsFee}}</div>
+            <div class="list-value row row-start">¥ {{fee.logisticsFee}}</div>
         </div>
 
         <div class="settle_list-item row row-start">
             <p class="list-name text-p">优惠</p>
-            <div class="list-value detail-icon row row-start">¥10.00</div>
+            <div class="list-value detail-icon row row-start">¥ {{fee.discountFee}}</div>
         </div>
 
         <div class="settle_list-item  row-start">
             <p class="list-name text-p user-remark" >买家备注</p>
-            <div class="list-value remark  row-start"><input placeholder="请输入你想对卖家说的话"/></div>
+            <div class="list-value remark  row-start"><input v-model="inputvalue" placeholder="请输入你想对卖家说的话"/></div>
         </div>
 
 
@@ -45,7 +45,7 @@
             <span class="confirm-num">￥{{fee.totalFee}}</span>
             <span class="confirm-des">含运费</span>
         </div>
-        <div class="confirm-btn row row-center text" @click="addrInfo && pay()">去支付</div>
+        <div class="confirm-btn row row-center text" @click="pay()">去支付</div>
     </div>
 
 </v-page>
@@ -66,13 +66,16 @@ export default {
         return {
             info: {},
             wx: {},
-            isPaing: false
+            isPaing: false,
+            inputvalue:'',
+            skuIds:''
         }
     },
     methods: {
         init () {
-            this.getOrderInfo(this.$route.query.skuIds)
+            this.getOrderInfo()
                 .then((res) => {
+                    console.log(res)
                     if (res.data.data) {
                         this.info = res.data.data
                     } else throw new Error('请求数据错误')
@@ -82,16 +85,15 @@ export default {
                 })
         },
         submit (addrId) {
-            const url = '/order/submit?' + querystring.stringify({
+            const url = '/v2/order/submit?' + querystring.stringify({
                 addressId: addrId,
-                logistics: 'on',
-                skuIds: this.$route.query.skuIds
-
-            })
+                logistics: 'on'
+            })+'&skuIds='+this.skuIds
             return axios.post(url)
         },
         getPay (orderId) {
             let currentUrl = location.href.split('#')[0]
+            console.log(currentUrl)
             const url = '/order/pay?' + querystring.stringify({
                 orderId: orderId,
                 payType: 'WEIXIN',
@@ -100,17 +102,22 @@ export default {
             return axios.post(url)
         },
         pay () {
+            if(!this.addrInfo){
+                alert('请添加地址')
+            }
             let orderId
             if (!this.isPaing) {
                 this.isPaing = true
                 this.submit(this.addrInfo.id)
                     .then((res) => {
+                        console.log(res)
                         if (res.data.data && res.data.errorCode === 200) {
-                            orderId = res.data.data
-                            return this.getPay(res.data.data)
+                            orderId = res.data.data.mainOrderVO.id
+                            return this.getPay(orderId)
                         } else throw new Error('订单提交失败')
                     })
                     .then((res) => {
+                        console.log(res)
                         if (res.data.data) {
                             wx.config(res.data.data)
                             return wx.ready()
@@ -134,8 +141,8 @@ export default {
                     })
             }
         },
-        getOrderInfo (skuIds) {
-            const url = '/v2/cart/next?' + querystring.stringify({skuId: skuIds})
+        getOrderInfo () {
+            const url = '/v2/cart/next?skuId=' + this.skuIds
             return axios.post(url)
         }
     },
@@ -146,15 +153,17 @@ export default {
                     return {
                         brand: this.info.cartItemMap[key][0].brand,
                         pds: this.info.cartItemMap[key].map((item) => {
+                            console.log(item)
                             return {
                                 id: item.id,
                                 $pdUrl: item.product.imgUrl,
                                 $categorys: item.product.categorys,
                                 $pdColor: item.product.color ? item.product.color.name : '',
-                                $skuSize: item.sku.spec,
-                                $originPrice: item.sku.rmbMarketPrice,
-                                $price: item.sku.rmbPrice,
-                                $amount: item.amount
+                                $skuSize: item.sku.spec1,
+                                $originPrice: item.sku.price,
+                                $price: item.sku.price,
+                                $amount: item.amount,
+                                $title:item.product.description,
                             }
                         })
                     }
@@ -163,8 +172,10 @@ export default {
         },
         addrInfo () {
             return this.info.address
+            
         },
         fee () {
+            console.log(this.info.totalPricingResult)
             return this.info.totalPricingResult || {}
         }
     },
@@ -175,6 +186,7 @@ export default {
     },
     created () {
         if (this.$route.query.skuIds && this.$route.query.skuIds.length) {
+            this.skuIds=this.$route.query.skuIds.join(',')
             this.init()
         } else this.$router.go(-1)
     }
@@ -188,7 +200,6 @@ export default {
         background: #ffffff;
     }
     .address {
-        flex: 0 0 1.4rem;
         padding: .1rem .34rem;
         background: url(../../assets/location.png) left .1rem center/.11rem no-repeat,
                     url(../../assets/arrow_right_b.png) right .15rem center/.11rem no-repeat;
@@ -204,23 +215,24 @@ export default {
         width: 100%;
     }
     .addr-info {
-        height: .4rem;
+        line-height: .2rem;
+        max-height: .4rem;
         margin-top: .03rem;
         overflow: hidden;
     }
     .colour-line {
         width: 100%;
         height: .05rem;
-        background: url(../../assets/line_colour.png) center/100% no-repeat;
+        background: url(../../assets/矩形1293@2x.png) center/100% no-repeat;
     }
     .order_pd {
         padding: .1rem .15rem;
-        border-top: solid 1px #000000;
-        border-bottom: solid 1px #000000;
+        border-bottom: solid 1px #e5e5e5;
     }
     .settle_list-item {
         height: .45rem;
         border-bottom: solid 1px #E5E5E5;
+        background: #fff;
     }
     .list-name {
         flex: 1 1;

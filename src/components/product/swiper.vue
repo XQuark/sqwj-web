@@ -1,11 +1,11 @@
 <template>
-<swiper :options="swiperOption" :not-next-tick="notNextTick" ref="mySwiper">
-    <swiper-slide v-for="item in imgs" :key="item.imgUrl">
-        <div class="carousel_img-box">
+<swiper :options="swiperOption" :not-next-tick="notNextTick" ref="mySwiper" class="topswiper">
+    <swiper-slide v-for="item in imgs" :key="item.imgUrl" class="img-box">
+        <a class="carousel_img-box" :href="item.targetUrl">
             <img :src="item.imgUrl" alt="" class="carousel_img">
-        </div>
+        </a>
     </swiper-slide>
-    <div class="swiper-pagination"  slot="pagination"></div>
+    <!-- <div class="swiper-pagination"  slot="pagination"></div> -->
     <!-- <div class="swiper-button-prev" slot="button-prev"></div> -->
     <!-- <div class="swiper-button-next" slot="button-next"></div> -->
     <!-- <div class="swiper-scrollbar"   slot="scrollbar"></div> -->
@@ -61,7 +61,7 @@ export default {
         }
     },
     created () {
-
+     this.getHeight()
     }
 }
 </script>
@@ -69,14 +69,23 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 
 <style scoped>
+.swiper-wrapper{
+    width: 100%;
+    height: 100%;
+}
+.swiper-pagination{
+    height: 20px;
+    
+}
 .carousel_img-box {
-    width: 3.6rem;
-    height: 4.6rem;
-    overflow: hidden;
+    display: block;
+    width:100%;
+    height: 100%;
 }
 .carousel_img {
     display: block;
     width: 100%;
+    height: 2.5rem;
 }
 </style>
 

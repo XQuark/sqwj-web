@@ -97,7 +97,10 @@ export default new Router({
         {
             path: '/pdlist',
             name: 'pdList',
-            component: pdList
+            component: pdList,
+            meta: {
+                keepAlive: true
+              }
         },
         {
             path: '/taglist',
