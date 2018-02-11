@@ -7,6 +7,7 @@
                 <span>{{addrInfo.phone}}</span>
             </p>
             <p class="addr-info text-info">收货地址：{{addrInfo.details}}</p>
+            <p class="store-name text-info">店名：{{addrInfo.storeName}}</p>
         </div>
 
         <div class="colour-line"></div>
@@ -31,10 +32,9 @@
             <p class="list-name text-p">实付款（含运费）</p>
             <div class="text-warn-capest row row-start">¥{{fee.payAmount}}</div>
         </div>
-
-        <div class="settle_list-item row-start">
-            <p class="list-name text-p">卖家备注</p>
-            <div class="list-values row row-start">周末休息，快递不要派送</div>
+         <div class="settle_list-items row-start">
+            <p class="list-names text-p">卖家备注</p>
+            <div class="list-values ">{{info.remarkAdmin}}</div>
         </div>
 
         <div class="order-card">
@@ -50,8 +50,9 @@
             <p class="text-order-b">物流公司：{{info.logisticsCompany}}</p>
             <p class="text-order-b">物流单号：{{info.logisticsOrderNo}}</p>
         </div>
+        </v-content>
 
-    </v-content>
+   
 
     <div v-if="info.status === 'SUBMITTED'" class="settle-btn row row-center" @click="pay">支付</div>
 
@@ -252,6 +253,11 @@ export default {
     .user-info, .addr-info, .shop-name {
         align-self: stretch;
     }
+    .store-name{
+        float: left;
+        font-size: 14px;
+        align-self: stretch;
+    }
     .shop-name {
         height: 0.2rem;
         line-height: 0.2rem;
@@ -278,8 +284,23 @@ export default {
         border-bottom: solid 1px #E5E5E5;
         background: #FFFFFF;
     }
+    .settle_list-items {
+        height: .9rem;
+        border-bottom: solid 1px #E5E5E5;
+        background: #FFFFFF;
+        padding-right: .08rem;
+        overflow: hidden;
+        /* margin-top: -.45rem; */
+    }
     .list-name {
         flex: 1 1;
+        margin-left: .12rem;
+        float: left;
+        height: 100%;
+        line-height:0.45rem;
+    }
+    .list-names {
+        width: .68rem;
         margin-left: .12rem;
         float: left;
         height: 100%;
@@ -290,12 +311,15 @@ export default {
         margin-right: .15rem;
         font-size: 14px;
         color: #666666;
-        float: left;overflow: hidden;
+        float: left;
+        overflow: hidden;
     }
     .list-values {
-        height: 100%;
+        width: 2.66rem;
+        height: .45rem;
+        line-height: .225rem;
         margin-left: .21rem;
-        font-size: 14px;
+        font-size: .14rem;
         color: #666666;
         float: left;
     }
@@ -333,10 +357,13 @@ export default {
         color: #E30059;
     }
     .order-card {
-        margin: .1rem 0;
+        position: relative;
+        width: calc(100% - .2rem);
         padding: .08rem;
         background: #FFFFFF;
-        position: relative;
+        float: left;
+        padding-left: .12rem;
+        border-top:4px solid #f4f4f4;
     }
     .ctrlc, .ctrlc1{
         text-align: center;

@@ -6,35 +6,9 @@
                 <div class="close_btn" @click="checkTag(item)"></div>
             </div> -->
         <div @click="search" class="search-logo"></div>
-        <!-- <router-link :to="{name: 'home'}" class="search-logo"></router-link> -->
         <input class="search-box" v-on:keydown ="getcode($event)" v-model="searchContain"/>
         <router-link :to="{name: 'home'}" class="search-p">取消</router-link>
     </div>
-    <!-- <div class="list-content row row-start">
-        <div class="brand_tag-list col col-start">
-            <div v-for="item in brands" :key="item.id" class="brand_tag row row-center" :class="{'brand_tag_active': currentId===item.id}" @click="switchBrand(item.id)">{{item.text}}</div>
-        </div>
-        <div class="tag-list">
-            <template v-if="isTrilaminar">
-                <div v-for="item in tagList" :key="item.id" class="sub-brand">
-                    <div class="sub_brand-head row row-center">
-                        <div class="line_black"></div>
-                        <div class="sub_brand-title">{{item.text}}</div>
-                        <div class="line_black"></div>
-                    </div>
-                    <div class="tags-container row-mul">
-                        <v-tag v-for="tag in item.children" :key="tag.id" :info="tag" :checkedTags="checkedTags" @check="checkTag"></v-tag>
-                    </div>
-                </div>
-            </template>
-            <template v-else>
-                <div class="tags-container row-mul">
-                    <v-tag v-for="tag in tagList" :key="tag.id" :info="tag" :checkedTags="checkedTags" @check="checkTag"></v-tag>
-                </div>
-            </template>
-        </div>
-
-    </div> -->
     <div class="history-search-box">
         <div class="history-search-left"></div>
         <div class="history-search">历史搜索</div>
@@ -136,11 +110,12 @@ export default {
         },
         clearhistory(){
             this.history=[];
-            sessionStorage.setItem('index',1)
             for(var i=1;i<=this.inx;i++){
                 sessionStorage.clear(i)
                
             }
+             this.inx=0;
+            sessionStorage.setItem('index',1)
         }
     },
     computed: {
@@ -161,21 +136,22 @@ export default {
         'v-tag': tag
     },
     created () {
-        this.getTagList()
-            .then((res) => {
-                if (res.data && res.data.length) {
-                    this.brands = res.data[0].children
-                    if (this.brands.length) {
-                        this.switchBrand(this.brands[0].id)
-                    }
-                } else throw new Error('网络错误')
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-        if(sessionStorage.getItem('index', this.inx)!=undefined){
-            this.inx=sessionStorage.getItem('index', this.inx);
+        // this.getTagList()
+        //     .then((res) => {
+        //         if (res.data && res.data.length) {
+        //             this.brands = res.data[0].children
+        //             if (this.brands.length) {
+        //                 this.switchBrand(this.brands[0].id)
+        //             }
+        //         } else throw new Error('网络错误')
+        //     })
+        //     .catch((err) => {
+        //         console.log(err)
+        //     })
+        if(sessionStorage.getItem('index')!=undefined){
+            this.inx=sessionStorage.getItem('index');
         }
+        console.log(this.inx)
         this.gethistory()
         console.log(this.history)
             

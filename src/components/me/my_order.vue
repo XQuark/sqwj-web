@@ -21,14 +21,6 @@
                 </p>
             </div>
 
-            <div v-if="order.status === 'SUBMITTED'" class="row-list row row-end">
-                <router-link class="done-btn row row-center text-p">付款</router-link>
-            </div>
-
-            <div v-if="order.status === 'SHIPPED'" class="row-list row row-end">
-                <div class="done-btn row row-center text-p">确认收货</div>
-            </div>
-
         </router-link>
 
         <v-empty v-if="!menus[currentIndex].data.length">
@@ -59,8 +51,11 @@ export default {
                 this.createTab(3, 'SHIPPED', '待收货'),
                 this.createTab(4, 'SUCCESS', '已完成')
             ],
+            wx: {},
+            isPaing:false,
             currentIndex: 0,
-            originData: []
+            originData: [],
+            orderId:''
         }
     },
     methods: {
@@ -81,7 +76,7 @@ export default {
                 type: type,
                 data: [],
                 page: 0,
-                size: 3,
+                size: 100,
                 isMore: true
             }
         },
@@ -142,7 +137,6 @@ export default {
     },
     created () {
         this.checkout(0)
-        console.log(this.menus)
     },
     mounted () {
 
@@ -178,8 +172,8 @@ export default {
     .order-item {
         display: block;
         width: 100%;
-        margin-top: .1rem;
         background: #ffffff;
+        border-top:4px solid #f4f4f4; 
     }
     .order-head {
         height: .35rem;
@@ -231,10 +225,16 @@ export default {
         background: #FFFFFF;
     }
     .done-btn {
+        font-size: 14px;
         width: .7rem;
         height: .2rem;
         margin-right: .1rem;
-        border: solid 1px #000000;
+        border: 1px solid #888;
+        border-radius: 3px;
+        color: #333;
+        display: block;
+        text-align: center;
+        line-height: .2rem;
     }
     .text-status, .text-warn{
         color:#E30059;

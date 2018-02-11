@@ -8,7 +8,7 @@
 
     <div class="cart-content">
         <v-brand v-for="item in brandList" :key="item.id" :brandInfo="item">
-            <div slot="select" class="select-icon" :class="{'selected-icon': item.chosed}" @click="checkoutBrand(item.id)"></div>
+            <!-- <div slot="select" class="select-icon" :class="{'selected-icon': item.chosed}" @click="checkoutBrand(item.id)"></div> -->
             <div slot="pds" v-for="pd in item.pds" :key="pd.id" class="brand-order row row-start" >
                 <div class="select-icon" :class="{'selected-icon': pd.chosed}" @click="checkoutItems([pd.id])"></div>
                 <v-pd :info="pdsInfo[pd.id]">
@@ -222,6 +222,7 @@ export default {
         },
         toggleHead () {
             this.isEdit = !this.isEdit
+            this.updateFee();
         },
         init () {
             this.getCarInfo()

@@ -151,13 +151,13 @@ export default {
     }
     .head-title-name {
         margin-top: .35rem;
-        font-size: 14px;
+        font-size: .14rem;
         color: #FFFFFF;
         text-align: center;
     }
     .head-title {
         margin-top: .1rem;
-        font-size: 36px;
+        font-size: .14rem;
         color: #FFFFFF;
         text-align: center;
     }
@@ -180,11 +180,11 @@ export default {
     .row-list-info {
         width: 100%;
         height: 100%;
-        font-size: 14px;
+        font-size: .14rem;
         position: relative;
     }
     .text-date {
-        font-size: 12px;
+        font-size: .12rem;
         color: #9B9B9B;
     }
     .rise-icon {
@@ -194,7 +194,7 @@ export default {
         background: #FFFFFF url(../../assets/drop.png) left .15rem center/.15rem no-repeat;
     }
     .head-valid{
-        font-size: 14px;
+        font-size: .14rem;
         font-family: PingFang-SC-Regular;
         height: 0.4rem;
         background: #FFFFFF;
@@ -235,7 +235,7 @@ export default {
     }
     .valid-money{
         margin-top:.18rem;
-        font-size: 19px;
+        font-size: .19rem;
     }
     .valid-line{
         margin-top:.05rem;

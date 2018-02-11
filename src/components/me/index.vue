@@ -1,9 +1,9 @@
 <template>
 <v-page-tab class="white-bg">
     <div class="me-head col-start">
-        <div class="avatar-box">
+        <router-link :to="{name: 'myInfo'}" class="avatar-box">
             <img :src="userInfo.avatar" alt="" class="avatar-img">
-        </div>
+        </router-link>
         <router-link class="user-name" :to="{name: 'myInfo'}">{{userInfo.name}}</router-link>
     </div>
 
@@ -90,12 +90,13 @@ export default {
     .user-name {
         margin-top: .44rem;
         margin-left: 0.17rem;
-        font-size: 18px;
+        font-size: .18rem;
          height: 0.24rem;
         color: #fff;
         width: 2rem;
         overflow: hidden;
         float: left;
+        line-height: .24rem;
     }
     .shop-name{
         margin-top: .17rem;

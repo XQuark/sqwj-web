@@ -13,7 +13,7 @@
             <p class="shop-name">{{info.productName}}</p>
             <p class="shop-money"><a>¥</a>{{info.productPrice}}</p>
             <p class="shop-rest">{{info.productAmount}}库存</p>
-            <p class="shop-over">{{info.productSales}}人已付款</p>
+            <p class="shop-over">{{info.productSale}}人已付款</p>
         </div>
     </router-link>
 </template>

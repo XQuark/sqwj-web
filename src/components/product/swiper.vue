@@ -1,9 +1,9 @@
 <template>
 <swiper :options="swiperOption" :not-next-tick="notNextTick" ref="mySwiper" class="topswiper">
     <swiper-slide v-for="item in imgs" :key="item.imgUrl" class="img-box">
-        <a class="carousel_img-box" :href="item.targetUrl">
+        <div class="carousel_img-box" @click="gopd(item.target)">
             <img :src="item.imgUrl" alt="" class="carousel_img">
-        </a>
+        </div>
     </swiper-slide>
     <!-- <div class="swiper-pagination"  slot="pagination"></div> -->
     <!-- <div class="swiper-button-prev" slot="button-prev"></div> -->
@@ -53,7 +53,16 @@ export default {
         }
     },
     methods: {
-
+        gopd(href){
+            if(href.length===8){
+              this.$router.push({
+                name: 'product',
+                params:{'id':href}
+            })
+            }else {
+                location=href
+            }
+        }
     },
     computed: {
         swiper () {

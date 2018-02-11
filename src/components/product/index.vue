@@ -30,16 +30,15 @@
         </div>
        <div class="spec" @click="openFooter"><a>规格</a><img src="../../assets/arrow_right.png"/></div>
        <div class="shop-detail">商品详情</div>
-       <div class="recommend" v-for="item in pdInfo.fragments[0].imgs"><img :src="item.imgUrl"/>
        </div>
+       <div  v-if="isok" class="recommend-box">
+            <div class="recommend" :key="indexs" v-for="(item,indexs) in pdInfo.fragments[0].imgs"><img :src="item.imgUrl"/></div>
        </div>
        <div class="add_cart-btn row row-center" @click="openFooter">加入购物车</div>
-       <transition>
         <div class="pdbox" v-if="isShowFooter" @touchmove.prevent>
             <div v-if="isShowFooter" class="mask-mode" @click="closeFooter"></div>
             <v-footer :pdInfo="pdInfo" @submit="submit" @alert="$refs.page.alert"></v-footer>
         </div>
-       </transition>
         </v-scroll-y>
 </v-page>
 
@@ -54,9 +53,10 @@ export default {
     data () {
         return {
             pdId: '',
-            pdInfo: {},
+            pdInfo: [],
             isCollection: false,
-            isShowFooter: false
+            isShowFooter: false,
+            isok:true
         }
     },
     methods: {
@@ -135,22 +135,19 @@ export default {
         init () {
             this.getPdInfo()
                 .then((res) => {
-                    //  debugger;
+                    if(res.data.data.fragments.length===0){
+                        this.isok=false
+                    }
+                    console.log(res.data.data)
                     if (res.data.data) {
                         this.pdInfo = res.data.data
+
                          console.log(this.pdInfo.collection)
                     } else throw new Error('网络请求结果错误')
                 })
                 .catch((err) => {
                     console.log(err)
                 })
-            // this.getCollectionStatus(this.pdId)
-            //     .then((res) => {
-            //         this.isCollection = res.data.data === true
-            //     })
-            //     .catch((err) => {
-            //         console.log(err)
-            //     })
         }
     },
     computed: {
@@ -182,7 +179,7 @@ export default {
         min-height: 100%;
         background: #FFFFFF;
     }
-    .carousel, .pd_row-up, .pd_row-tag, .add_cart-btn{
+    .carousel, .pd_row-up, .pd_row-tag{
         flex-shrink: 0;
     }
     .carousel {
@@ -196,6 +193,7 @@ export default {
         width: 100%;
         padding-top: .12rem;
         float: left;
+        border-bottom:1px solid #f4f4f4; 
     }
     .line-vertical {
         width: 2.97rem;
@@ -262,12 +260,8 @@ export default {
         color: #333333;
     }
     .add_cart-btn {
-        flex: 0 0 .34rem;
         width: 1.96rem;
         height: .33rem;
-        margin-bottom: .15rem;
-        margin-right: .15rem;
-        margin-left: .9rem;
         border-radius: .17rem;
         background: #E30059;
         font-size: 18px;
@@ -276,6 +270,8 @@ export default {
         bottom: 0;
         opacity: 0.75;
         z-index: 90;
+        left: .89rem;
+        bottom:.15rem ;
     }
     .mask-mode {
        width: 100%;
@@ -332,19 +328,27 @@ export default {
    margin-left: .1rem;
     }
      .insurance-p2{
-    width: 20%;
+    width: 25%;
+    min-width: 73px;
     height: 100%;
     margin-left: .03rem;
     }
     .insurance-p3{
-    width: 20%;
+    width: 25%;
+     min-width: 73px;
     height: 100%;
-    margin-left: .33rem;
+    
     }
     .insurance-p4{
-    width: 20%;
+    width: 25%;
+    min-width: 73px;
     height: 100%;
-    margin-left: .33rem;
+  
+    }
+    .recommend-box{
+        position: absolute;
+        z-index: 0;
+        margin-top: 6.4rem;
     }
     .spec, .shop-detail{
         background: #fff;
@@ -354,6 +358,10 @@ export default {
         font-size: 14px;
         margin-top: .08rem;
         float: left;
+    }
+    .spec{
+        border-top: 4px solid #f4f4f4;
+        border-bottom: 4px solid #f4f4f4;
     }
     .spec a{
         display: block;
@@ -380,25 +388,20 @@ export default {
         width: 100%;
         background: #fff;
         float: left;
-        position: relative;
-        overflow: hidden;
     }
     .recommend img{
        width: 100%;
-       height: 100%;
     }
     .spec-box{
         width: 100%;
-        height: 5.27rem;
-        float: left;
         position: absolute;
-        top:3.75rem;
+        margin-top: 3.75rem;
     }
     .pdbox{
         width: 100%;
         height: 100%;
         background:rgba(0, 0, 0, 0.4);
-        position: absolute;
+        position: fixed;
         z-index: 99;
        transition-duration: 0.1s;
        transition-timing-function:ease-out;

@@ -8,6 +8,7 @@
                 <span class="user_info-phone">{{item.phone}}</span>
             </p>
             <p class="addr-info text-p">{{item.details}}</p>
+            <p class="shop-name">店名：{{item.storeName}}</p>
             <div class="floor-row row row-end">
                 <p v-if="item.isDefault" class="default-amrk">[默认地址]</p>
                 <router-link class="edit-btn text-p" :to="{path: '/address/edit/' + item.id}">修改</router-link>
@@ -108,5 +109,9 @@ export default {
     }
     .delete-btn {
         background: url(../../assets/delete.png) left center/.13rem no-repeat;
+    }
+    .shop-name{
+        font-size: 14px;
+        margin-top:.08rem; 
     }
 </style>

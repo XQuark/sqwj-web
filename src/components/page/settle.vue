@@ -75,7 +75,6 @@ export default {
         init () {
             this.getOrderInfo()
                 .then((res) => {
-                    console.log(res)
                     if (res.data.data) {
                         this.info = res.data.data
                     } else throw new Error('请求数据错误')
@@ -84,12 +83,22 @@ export default {
                     console.log(err)
                 })
         },
-        submit (addrId) {
+        submit (addrId,remark) {
+            if(this.info.couponId==''){
             const url = '/v2/order/submit?' + querystring.stringify({
                 addressId: addrId,
-                logistics: 'on'
+                logistics: 'on',
+                remark:remark
             })+'&skuIds='+this.skuIds
-            return axios.post(url)
+             return axios.post(url)
+            }else{
+                const url = '/v2/order/submit?' + querystring.stringify({
+                addressId: addrId,
+                logistics: 'on',
+                remark:remark
+            })+'&skuIds='+this.skuIds+'&shopCoupons[aj6wd1mm]='+this.info.couponId
+             return axios.post(url)
+            }
         },
         getPay (orderId) {
             let currentUrl = location.href.split('#')[0]
@@ -108,20 +117,25 @@ export default {
             let orderId
             if (!this.isPaing) {
                 this.isPaing = true
-                this.submit(this.addrInfo.id)
+                this.submit(this.addrInfo.id,this.inputvalue)
                     .then((res) => {
-                        console.log(res)
                         if (res.data.data && res.data.errorCode === 200) {
                             orderId = res.data.data.mainOrderVO.id
                             return this.getPay(orderId)
-                        } else throw new Error('订单提交失败')
+                        } else { 
+                            alert('订单提交失败')
+                             this.$router.push({name: 'myOrder'})
+                        }
                     })
                     .then((res) => {
                         console.log(res)
                         if (res.data.data) {
                             wx.config(res.data.data)
                             return wx.ready()
-                        } else throw new Error('发起支付失败')
+                        } else {
+                            alert('发起支付失败')
+                              this.$router.push({name: 'myOrder'})
+                        }
                     })
                     .then(() => {
                         wx.chooseWXPay()
@@ -133,11 +147,13 @@ export default {
                                     this.$refs.page.alert('你已取消支付')
                                 } else this.$refs.page.alert('微信浏览器支付接口调用失败')
                                 this.isPaing = false
+                                this.$router.push({name: 'myOrder'})
                             })
                     })
                     .catch((err) => {
                         this.isPaing = false
-                        console.log(err)
+                        alert('支付错误')
+                         this.$router.push({name: 'myOrder'})
                     })
             }
         },
@@ -249,6 +265,8 @@ export default {
         height: .55rem;
         border-top: solid 1px #CACACA;
         background: #FFFFFF;
+        position:fixed;
+        bottom: 0;
     }
     .confirm-btn {
         width: 1rem;
@@ -269,19 +287,20 @@ export default {
     .user-remark{
         height: 100%;
         line-height: 0.45rem;
-        width: 73px;
+        width: .73rem;
         float: left;
     }
     .remark{
         height: 100%;
         line-height: 0.45rem;
-        width: 240px;
+        width: 2.4rem;
         float: left;
     }
     .remark input{
         height: 100%;
+        font-size: 14px;
         line-height: 0.45rem;
-        width: 240px;
+        width: 2.4rem;
         display: block;
         overflow: hidden;
     }
@@ -301,8 +320,6 @@ export default {
         color: #999999;
     }
     .detail-icon {
-        padding-right: .22rem;
-        background: url(../../assets/arrow_right.png) right center/.07rem no-repeat;
     }
     .selected-icon {
         padding-right:  .3rem;

@@ -23,12 +23,6 @@
         <router-link class="simple-btn" :to="{name: 'order' , params: {id: orderInfo.id}}">查看订单</router-link>
         <router-link class="simple-btn" :to="{name: 'home'}">返回首页</router-link>
     </div>
-
-    <div class="order-notice row-list text-warn-low">
-        <p>购物须知：</p>
-        <p>所有产品需要在国外购买及发货。 </p>
-        <p>本平台“已发货”——已由英国发出（国际快递）；到国内后再由国内 快递将宝贝发出，届时会告知大家物流单号信息。</p>
-    </div>
 </v-page>
 
 </template>
@@ -92,7 +86,7 @@ export default {
     .head-bg {
         width: 100%;
         height: 1rem;
-        background: url(../../../static/img/矩形17@2x.png) left top/contain no-repeat;
+        background: url(../../assets/over.png) left top/contain no-repeat;
         background-size: 100% 100%;
     }
     .head_title {

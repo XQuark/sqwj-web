@@ -2,23 +2,6 @@
 <keep-alive>
 <v-page ref="page">
 <v-scroll-y ref="scroller" @pullingUp="OnpullingUp">
-<!-- <v-scroll-y ref="scroller"> -->
-    <!-- <div class="head row row-center">
-        <p class="title">{{title}}</p>
-        <div class="cart-nav"></div>
-        <router-link class="cart-nav" :to="{name: 'car'}"></router-link>
-    </div> -->
-    
-
-    <!-- <router-link v-for="item in pds" :key="item.id" :to="{path: 'product/' + item.id}" class="pd">
-        <div class="pd_img-box">
-            <img :src="item.imgUrl" alt="" class="pd_img">
-        </div>
-        <div class="logo">
-            <img :src="item.brandImgUrl" alt="" class="logo_img">
-        </div>
-        <div class="collected text-p-cap">{{item.collectionNum}}</div>
-    </router-link> -->
     <div v-if="top" :class="(index%2)==0 ?'shop-tran':'shop-tran-right'" v-for="(item,indx) in topvalue " :key="indx">
             <p class="shop-tran-top">{{item.name}}</p>
             <p class="shop-tran-title">{{item.details}}</p>
@@ -31,7 +14,7 @@
             <p class="shop-valid">{{item.description}}</p>
             <p class="shop-money"><a>¥</a>{{item.price}}</p>
             <p class="shop-rest">{{item.amount}}库存</p>
-            <p class="shop-over">{{item.sales}}人已付款</p>
+            <p class="shop-over">{{item.productSale}}人已付款</p>
         </div>
         </router-link>
         <router-link v-if="top" class="shop-nav-list" v-for="(item,index) in podList " :key="index" :to="{path: 'product/' + item.productId}">
@@ -40,7 +23,7 @@
             <p class="shop-valid">{{item.productName}}</p>
             <p class="shop-money"><a>¥</a>{{item.productPrice}}</p>
             <p class="shop-rest">{{item.productAmount}}库存</p>
-            <p class="shop-over">{{item.discount}}人已付款</p>
+            <p class="shop-over">{{item.productSale}}人已付款</p>
         </div>
         </router-link>
         </template>
@@ -82,7 +65,7 @@ export default {
             var that=this
             var a=0;
             var t=new Date();
-           const url = '/v2/promotion/'+id+"?t="+t
+           const url = '/v2/promotion/'+id
            return axios.post(url)
                 .then((res) => {
                   that.topvalue=[]
@@ -103,10 +86,9 @@ export default {
                 size:10,
                 categoryId:that.groupId,
             }
-            const url = '/v2/catalog/allProducts?direction=desc&pageable=true'+querystring.stringify(data)+'&t='+t
+            const url = '/v2/catalog/allProducts?direction=desc&pageable=true&'+querystring.stringify(data)
            return axios.post(url)
             .then((res) => {
-                
                 if(res.data.data.length>0){
                     that.iscontain=true
                 }
@@ -129,7 +111,7 @@ export default {
                 size:10
             }
             console.log(data)
-            const url = '/v2/promotion/listTweet/'+that.groupId+'?'+querystring.stringify(data)+'&t='+t
+            const url = '/v2/promotion/listTweet/'+that.groupId+'?'+querystring.stringify(data)
             return axios.post(url)
             .then((res) => {
                 if(res.data.data.length>0){
@@ -148,50 +130,22 @@ export default {
         },
         getsearch(){
             var t=new Date()
-            const url = '/v2/product/searchbyApp?order=default&key='+this.value+'&t='+t
+            const url = '/v2/product/searchbyApp?order=default&key='+this.value
             var that=this
             return axios.post(url)
             .then((res) => {
-                //  if(page>0){
-                //  if(res.data.data.length<10){
-                //      return
-                //     }
-                // }
-                if(res.data.data.list.length>0){
-                    that.iscontain=true
+                if(res.data.data.list[0]){
+                that.iscontain=true
                 }
-                 if(res.data.data.list.length<10){
-                     that.isget=false
-                }
-                    that.podList=that.podList.concat(res.data.data.list)
-                    return that.podList
+                    that.podList=res.data.data.list
+                    console.log(that.podList)
                 })
                 .catch((err) => {
                     console.log(err)
                     return err
                 })
         },
-        // getNextPage () {
-        //     var that=this
-        //     return this.updatePager((page, size) => {
-        //         return this.getPdList(page, size, that.groupId)
-        //             .then((res) => {
-        //                 if (res.data.data) {
-        //                     this.title = res.data.data.headline
-        //                     return res.data.data.list
-        //                 } else throw new Error('请求结果数据错误')
-        //             })
-        //     }).catch((err) => {
-        //         console.log(err)
-        //     })
-        // },
         OnpullingUp () {
-            // this.getNextPage()
-            //     .then(() => {
-            //         if (this.pager.isMore) {
-            //             this.$refs.scroller.finishPullUp()
-            //         }
-            //     })
             if(this.isget==false){
                 return
             }
@@ -216,38 +170,27 @@ export default {
         'v-empty': empty
     },
     created () {
-        this.$forceUpdate()
-        if (this.$route.query && this.$route.query.groupId) {
-            this.groupId = this.$route.query.groupId
-            this.top=this.$route.query.istop;
-            this.index=this.$route.query.inx
+         if(this.$route.query.istop === false||this.$route.query.istop === 'false'){
+             this.top=false
+         }else if(this.$route.query.istop === true||this.$route.query.istop === 'true'){
+             this.top=true
+         }
+         this.value=this.$route.query.value+'';
+         if(this.value!=='undefined'){
+             this.getsearch(this.page);
+         }
+            this.groupId = this.$route.query.groupId+'';
+            if(this.groupId!=='undefined'){
+            this.index=this.$route.query.inx;
             if(this.top==true){
                 this.getbrand(this.groupId)
                 this.getvalidList(this.page)
-                console.log(this.podList)
-            }else{
-                var that=this;
-             this.getPdList(this.page).then(function(res) {
-                 that.podList=res
-                // that.$destroy();
-                // that.$forceUpdate()
-                // this.$router.go({
-                //   path: '/pdlist',
-                //   force: true
-                // })
-                // console.log(111111)
-             })
-
+            }else if(this.top==false){
+             this.getPdList(this.page)
+             
             }
-           
-            // this.getNextPage()
-        } else if(this.$route.query && this.$route.query.value){
-            this.top=this.$route.query.istop;
-            this.value=this.$route.query.value+'';
-            this.getsearch(this.page);
-            console.log(this.podList)
-        }else this.$router.go(-1)
-    }
+            }
+        }
 }
 </script>
 
@@ -260,7 +203,7 @@ export default {
         position: relative;
         float: left;
         background: #fff;
-        border: 2px solid #f4f4f4;
+        border-bottom: 2px solid #f4f4f4;
     }
     .shop-tran-right{
         width: 3.5rem;
@@ -269,7 +212,7 @@ export default {
         position: relative;
         float: left;
         background: #fff;
-        border: 2px solid #f4f4f4;
+        border-bottom: 2px solid #f4f4f4;
     }
     .shop-tran .shop-tran-top{
         width: 1.75rem;
@@ -307,6 +250,7 @@ export default {
         width: 100%;
         height:1.45rem ;
         border-bottom: 4px solid #f4f4f4;
+        float: left;
     }
     .shop-tran-title{
        width: 1.08rem;

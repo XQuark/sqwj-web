@@ -34,7 +34,7 @@ export default {
     },
     methods: {
         getCollections (page, size) {
-            const url = '/v2/productCollection/list?size=' + size + '&page=' + page
+            const url = '/v2/productCollection/listByApp?page=0&size=100' 
             return axios.post(url)
         },
         getNextPage () {
@@ -43,8 +43,8 @@ export default {
                     .then((res) => {
                         console.log(res)
                         if (res.data.data) {
-                            console.log(res.data.data.list)
-                            return res.data.data.list
+                            console.log(res.data.data)
+                            return res.data.data
                         } else throw new Error('请求结果数据错误')
                     })
             }).catch((err) => {

@@ -15,12 +15,14 @@
 
             <router-link class="row_list-item row row-between" :to="{name: 'infoPhone'}">
                 <div class="row_list-left text-p-cap">绑定手机号</div>
-                <div class="row_list-right arrow_right-icon text-p-cap">{{phone}}</div>
+                <div class="row_list-right arrow_right-icon text-p-cap">{{user.phone}}</div>
+                <div class="icon"></div>
             </router-link>
 
             <div class="row_list-item row row-between"  @click="toCheckSex">
                 <div class="row_list-left text-p-cap">性别</div>
                 <div class="row_list-right arrow_right-icon gender-text">{{user.sex}}</div>
+                <div class="icon"></div>
             </div>
             
 <!--             <router-link class="row_list-item row row-between" :to="{name: 'infoDate'}">
@@ -104,6 +106,16 @@ export default {
         height: .45rem;
         border-bottom: solid 1px #E5E5E5;
         background: #FFFFFF;
+        position: relative;
+    }
+    .icon{
+        position: absolute;
+        width: .09rem;
+        height: .18rem;
+        top: .12rem;
+        right: .12rem;
+        background: url(../../assets/arrow_right.png) no-repeat;
+        background-size: 100% 100%;
     }
     .row_list-avatar {
         height: .8rem;
@@ -133,7 +145,7 @@ export default {
     }
     .arrow_right-icon {
         padding-right: .15rem;
-        background: url(../../assets/arrow_right.png) right center/.1rem no-repeat;
+        /* background: url(../../assets/arrow_right.png) right center/.1rem no-repeat; */
     }
     .sex-checkbox {
         display: block;

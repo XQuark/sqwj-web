@@ -8,7 +8,7 @@
 
         <div class="input-list row row-start">
             <label for="" class="input-list-label text-p">验证码</label>
-            <input type="text" class="input-list-input text-p" v-model="phone">
+            <input type="text" class="input-list-input text-p" v-model="code">
         </div>
 
         <div class="confirm-btn row row-center" @click="submit">确定</div>
@@ -27,11 +27,13 @@ export default {
             oldPhone:'',
             code: '',
             getcode:true,
-            codevalue:"获取验证码"
+            codevalue:"获取验证码",
+            okcode:false
         }
     },
     methods: {
         getCode () {
+             this.okcode=true;
             var that=this;
             if(this.checkPhone()){
                 if(this.getcode==false){
@@ -40,7 +42,9 @@ export default {
             const url = '/v2/register/bindPhone?mobile=' + this.oldPhone
             axios.post(url)
                 .then((res) => {    
-                    console.log(res)
+                    if(res.data.errorCode!==200){
+                    alert(res.data.moreInfo)
+                    }
                    this.getcode=false;
                 })
                 .catch((err) => {
@@ -68,17 +72,20 @@ export default {
             }
         },
         submit () {
-            if(this.phone==''){
-                return alert('验证码错误')
+            if(this.okcode==false){
+                alert('请获取验证码')
+                return
             }
             if (this.checkPhone()) {
-                const url = '/v2/user/updatePhoneNew?mobile=' + this.phone
+                const url = '/v2/user/updatePhoneNew?mobile='+this.oldPhone+'&smsCode='+this.code
                 axios.post(url)
                     .then((res) => {
-                        if (res.data.data !== true) {
-                            alert('绑定失败')
+                        if (res.data.errorCode==200) {
+                            alert('修改成功')
+                            this.$router.go(-1)
+                        }else{
+                            alert(res.data.moreInfo)
                         }
-                        this.$router.go(-1)
                     })
                     .catch((err) => {
                         console.log(err)
@@ -98,22 +105,28 @@ export default {
         margin: 0 auto;
         margin-top: .1rem;
         background: #F5F5F5;
+        position: relative;
     }
     .input-list-label {
+        width: 45px;
         margin-left: .14rem;
+        line-height: .45rem;
     }
     .input-list-input {
-        flex: 1 1;
+        width: 1.5rem;
         margin-left: .2rem;
         background: #F5F5F5;
     }
     .code-btn {
-        width: .85rem;
+        width: .95rem;
         height: .3rem;
-        margin-right: .1rem;
+        margin-right: -.08rem;
         background: #e30059;
-        font-size: 14px;
+        font-size:.14rem;
         color: #FFFFFF;
+        line-height: .3rem;
+        position: absolute;
+        right: .1rem;
     }
     .confirm-btn {
         width: 3.5rem;

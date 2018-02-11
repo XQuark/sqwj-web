@@ -9,7 +9,8 @@
                 <div v-for="item in pdInfo.categorys" :key="item.id" class="pd_tag-item row row-center">{{item.name}}</div>
             </div> -->
             <div class="pd_price">￥{{oprice}}</div>
-            <p class="choose">请选择规格</p>
+            <p v-if="isno" class="choose">请选择规格</p>
+            <p v-if="!isno" class="choose"></p>
             <div class="num-seting row row-start">
                 <div class="num-item num_sub" @click="sub">-</div>
                 <div class="num_input-box row row-center">
@@ -19,14 +20,14 @@
             </div>
         </div>
     </div>
-    <div class="panel-spec">
-        <div class="spec-name">{{pdInfo.skuAttributes[0].name}}</div>
+    <div v-if="isno" class="panel-spec">
+        <div  class="spec-name">{{pdInfo.skuAttributes[0].name}}</div>
         <div class="spec_size-list row row-start">
-            <div v-for="item in pdInfo.skuAttributes[0].items" :key="item.id" class="spec_size-item row row-center" :class="{'spec_size-active': item.id === skuId}" @click="selectSku(item)">{{item.name}}</div>
+            <div  v-for="item in pdInfo.skuAttributes[0].items" :key="item.id" class="spec_size-item row row-center" :class="{'spec_size-active': item.id === skuId}" @click="selectSku(item)">{{item.name}}</div>
         </div>
         <div class="spec-name spec_size-name">{{pdInfo.skuAttributes[1].name}}</div>
         <div class="spec_size-list row row-start">
-            <div v-for="item in pdInfo.skuAttributes[1].items" :key="item.id" class="spec_size-item row row-center" :class="{'spec_size-active': item.id === twoId}" @click="selectTwo(item)">{{item.name}}</div>
+            <div  v-for="item in pdInfo.skuAttributes[1].items" :key="item.id" class="spec_size-item row row-center" :class="{'spec_size-active': item.id === twoId}" @click="selectTwo(item)">{{item.name}}</div>
         </div>
     </div>
     <div class="confirm-btn row row-center" @click="confirm">确定</div>
@@ -47,7 +48,8 @@ export default {
             twoId:'',
             pushId:'',
             pdId:'',
-            oprice:0
+            oprice:0,
+            isno:true
         }
     },
     methods: {
@@ -59,7 +61,7 @@ export default {
                 }
             });
             if (this.amount > 0 && that.pdId) {
-                this.$emit('submit', that.pdId, this.amount)
+                this.$emit('submit', that.pdId, that.amount)
             } else this.$emit('alert', '请选择正确颜色和数量')
         },
         selectSku (item) {
@@ -126,6 +128,11 @@ export default {
     },
     created(){
     this.oprice=this.pdInfo.skus[0].price;
+    if(this.pdInfo.skuAttributes.length===0){
+        this.isno=false;
+        this.pushId=this.pdInfo.skus[0].id;
+        this.pdId=this.pdInfo.skus[0].id;
+    }
     }
 }
 </script>
@@ -187,6 +194,7 @@ export default {
     }
     .choose{
         font-size: 14px;
+        height: 14px;
         float: left;
         margin-left: 0.14rem;
         margin-top:0.43rem;;

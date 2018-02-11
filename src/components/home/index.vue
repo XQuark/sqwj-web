@@ -16,6 +16,10 @@
         <v-carousel :imgs="imgs" class="header-image"></v-carousel>
        
         <div class="shop-nav">
+            <router-link :to="{name: 'pdList', query: {groupId:0,istop:false}}" class=" shop-nav-box">
+                <div class="shop-nav-img"><img src="../../assets/allshop.png"/></div>
+                <p class="shop-nav-names">全部商品</p>
+            </router-link>
             <router-link v-for="item in genre" :key="item.id" :to="{name: 'pdList', query: {groupId: item.id,istop:false}}" class=" shop-nav-box">
                 <div class="shop-nav-img"><img :src="item.imgUrl"/></div>
                 <p class="shop-nav-name">{{item.name}}</p>
@@ -65,16 +69,16 @@ export default {
     },
     extends: pager,
     methods: {
-        // login () {
-        //     const url = '/v2/signin_check?u=19911111111&mobilePhoneVerifyCode=111111&authType=MOBILE_PHONE'
-        //     return axios.post(url)
-        //         .then((res) => {
-        //         })
-        //         .catch((err) => {
-        //             return err
-        //         })
-        //     // return Promise.resolve()
-        // },
+        login () {
+            const url = '/v2/signin_check?u=13163388059&mobilePhoneVerifyCode=111111&authType=MOBILE_PHONE'
+            return axios.post(url)
+                .then((res) => {
+                })
+                .catch((err) => {
+                    return err
+                })
+            // return Promise.resolve()
+        },
         getindeximglsit(){
             var that=this
            const url = '/v2/openapi/home/getCarousel'
@@ -116,7 +120,7 @@ export default {
            const url = '/coupon/userPromotionCoupon/acquire?promotionCouponId='+couponId+'&t='+time
            return axios.get(url)
                 .then((res) => {
-                    alert(res.data.data.msg)
+                    alert(res.data.msg)
                 })
                 .catch((err) => {
                     return err
@@ -168,7 +172,7 @@ export default {
         'v-carousel': carousel
     },
     created () {
-        // this.login()
+        this.login()
         this.getindeximglsit()
         this.getgenrelsit()
         this.getvolidlsit()
@@ -232,7 +236,7 @@ export default {
         text-align: center;
         background: #e30059;
         color: #fff;
-        font-size: .13rem;
+        font-size: .12rem;
         line-height:.2rem;
         font-family: PingFang-SC-Regular;
         float: right;
@@ -267,7 +271,7 @@ export default {
         margin-top: 0.17rem;
         z-index: 99;
         position:absolute;
-        box-shadow:0px 5px 15px #FF9A00; 
+        box-shadow:0px 2px 10px #FF9A00; 
     }
     .shop-tran-right .shop-tran-top{
         text-align: left;
@@ -283,7 +287,7 @@ export default {
         z-index: 99;
         position:absolute;
         right: 0;
-        box-shadow:0px 5px 15px #e30059;
+        box-shadow:0px 2px 10px #e30059;
         margin-right: .1rem;
     }
     .shop-tran-title{
@@ -341,7 +345,7 @@ export default {
         width:.55rem;
         height:.95rem;
         float: left;
-        margin-left:.2rem;
+        margin-left:.166rem;
         overflow: hidden;
     }
     .shop-nav-img{
@@ -362,6 +366,15 @@ export default {
         text-align: center;
         font-size: 12px;
         color: #333;
+    }
+    .shop-nav-names{
+        width: .75rem;
+        height: .275rem;
+        line-height: .275rem;
+        text-align: center;
+        font-size: 12px;
+        color: #333;
+        margin-left: -.1rem;
     }
     .valid-left{
         width: 1.42rem;
